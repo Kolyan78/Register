@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактирование записи мастера № {{ master.id }}: {{ master.surname }} {{ master.name }}</title>
+</head>
+<body class="container">
+    <form method="post">
+        {% csrf_token %}
+        <h3>Редактирование данных мастера # {{ master.id }}</h3>
+        <p>
+            <label>Введите фамилию</label>
+            <input type="text" name="surname" value="{{ master.surname }}"/>
+        </p>
+        <p>
+            <label>Введите имя</label>
+            <input type="text" name="name" value="{{ master.name }}"/>
+        </p>
+        <p>
+            <label>Введите E-mail</label>
+            <input type="text" name="email" value="{{ master.email }}"/>
+        </p>
+        <p>
+            <label>Введите телефон</label>
+            <input type="text" name="phone" value="{{ master.phone }}"/>
+        </p>
+        <input type="submit" value="Сохранить">
+    </form>
+
+</body>
+</html>

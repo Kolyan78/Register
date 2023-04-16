@@ -1,0 +1,138 @@
+{% load mathfilters %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Реестр заказов</title>
+    <style>
+        .row1 {
+            background-color: #f8f8f8;
+        }
+        .row2 {
+            background-color: #e1e1e1;
+        }
+        #border_example {border-collapse: collapse;} #border_example td,th{border:1px solid}
+    </style>
+</head>
+<body class="container" style=font-family:"Calibri">
+    <div align="center"><h1>Реестр заказов</h1></div>
+    <h2>Сегодня {{ d }}</h2>
+    <h3>Количество записей в реестре: {{ num }}<br>
+        Количество мастеров: {{ mas }}<br>
+        Количество клиентов: {{ cli }}</h3>
+{#    <a href="">Редактирование списка мастеров</a><br>#}
+{#    <a href="">Редактирование списка клиентов</a>#}
+    {% if register.count > 0 %}
+    <table id="border_example" cellpadding="2" cellspacing="0">
+        <thead>
+        <th width="2%">Id</th><th width="4%">Дата</th><th>Клиент</th><th width="20%">Название печати</th>
+        <th width="5%">Стоимость</th><th>Скидка</th>
+        <th width="5%">Стоимость со скидкой</th><th width="5%">Цена для мастера</th>
+        <th width="5%">Оплата мастеру</th><th>Мастер</th><th>Мой доход</th>
+        <th>Готово</th><th>Номер счета</th><th width="3%">Оплачено</th><th width="3%">Расчет с мастером</th>
+        <th colspan="2">Действия</th>
+        </thead>
+        {% for item in register %}
+            <tr class="{% cycle 'row1' 'row2'%}">
+            <td align="right" width="2%">{{ item.id|stringformat:"05d" }}</td>
+            <td width="3%">{{ item.date|date:"d.m.Y" }}</td>
+            <td align="center" width="3%" title="{{ item.client.name }}">{{ item.client.id|stringformat:"04d" }}</td>
+            <td width="39%">{{ item.ordername }}</td>
+            <td align="right" width="5%">{{ item.price|floatformat:"2g" }}</td>
+            <td align="center" width="3%">{{ item.discount }}%</td>
+            {% with price_discount=100|sub:item.discount|div:100|mul:item.price %}
+            {% with price_master=item.mprice|mul:0.8 %}
+            <td align="right" width="5%">{{ price_discount|floatformat:"2g" }}</td>
+            <td align="right" width="5%">{{ item.mprice|floatformat:"2g" }}</td>
+            <td align="right" width="5%">{{ price_master|floatformat:"2g" }}</td>
+            <td align="center" width="5%">{{ item.master.name }}</td>
+            <td align="right" width="5%">{{ price_discount|sub:price_master|floatformat:"2g" }}</td>
+            {% endwith %}
+            {% endwith %}
+            <td align="center" width="3%">
+                {% if item.ready %}
+                    <img src="{% static 'images/ready.png' %}" alt="Готово">
+                {% else %}
+                    <img src="{% static 'images/notready.png' %}" alt="Не готово">
+                {% endif %}
+            </td>
+            <td align="right" width="3%">{{ item.invoice|stringformat:"03d" }}</td>
+            <td align="center" width="5%" title="{{ item.statuspay.status }}">{{ item.statuspay.sign }}</td>
+            <td align="center" width="5%" title="{{ item.mpay.status }}">{{ item.mpay.sign }}</td>
+            <td align="center" width="2%" title="Редактировать"><img src="{% static 'images/edit.png' %}" alt=""></td>
+            <td align="center" width="2%" title="Удалить"><img src="{% static 'images/delete.png' %}" alt="Удалить"></td>
+{#            <td><a href="edit/{{ person.id }}">Изменить</a> | <a href="delete/{{ person.id }}">Удалить</a></td>#}
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
+{#    <h3>Список клиентов</h3>#}
+{#    <h3>Список мастеров</h3>#}
+
+{#    <form method="post" action="create/">#}
+{#        {% csrf_token %}#}
+{#        <p>#}
+{#            <label>Введите фамилию</label>#}
+{#            <input type="text" name="surname" />#}
+{#        </p>#}
+{#        <p>#}
+{#            <label>Введите имя</label>#}
+{#            <input type="text" name="name" />#}
+{#        </p>#}
+{#        <p>#}
+{#            <label>Введите E-mail</label>#}
+{#            <input type="text" name="email" />#}
+{#        </p>#}
+{#        <p>#}
+{#            <label>Введите телефон</label>#}
+{#            <input type="text" name="phone" />#}
+{#        </p>#}
+{#        <input type="submit" value="Отправить">#}
+{#    </form>#}
+{#    {% if masters.count > 0 %}#}
+{#    <h3>Список мастеров</h3>#}
+{#    <table cellspacing="0">#}
+{#        <thead>#}
+{#        <th>Id</th><th>Фамилия</th><th>Имя</th><th>E-mail</th><th>Телефон</th><th>Действия</th>#}
+{#        </thead>#}
+{#        {% for person in masters %}#}
+{#        <tr class="{% cycle 'row1' 'row2'%}">#}
+{#            <td>{{ person.id }}</td>#}
+{#            <td>{{ person.surname }}</td>#}
+{#            <td>{{ person.name }}</td>#}
+{#            <td>{{ person.email }}</td>#}
+{#            <td>{{ person.phone }}</td>#}
+{#            <td><a href="edit/{{ person.id }}">Изменить</a> | <a href="delete/{{ person.id }}">Удалить</a></td>#}
+{#        </tr>#}
+{#        {% endfor %}#}
+{#    </table>#}
+{#    {% endif %}#}
+
+{#    <table border="1">#}
+{#    {% for i in w %}#}
+{#    <tr class="{% cycle 'row1' 'row2' 'row3' 'row4'%}">#}
+{#        <td>{{ forloop.counter }}</td>#}
+{#        <td>{{ i }}</td>#}
+{#    </tr>#}
+{#    {% endfor %}#}
+{#    </table>#}
+{##}
+{#    {% if num > 7500 %}#}
+{#        <h2>Вторая#}
+{#    {% else %}#}
+{#        <h2>Первая#}
+{#    {% endif %}#}
+{#     половина</h2>#}
+{##}
+{#    <h3>{% lorem 20 w random %}</h3>#}
+{##}
+{#    {% templatetag openblock %} characters open a block.#}
+{##}
+{#    <a href="{% url 'home' %}">Home</a>#}
+
+
+
+</body>
+</html>
